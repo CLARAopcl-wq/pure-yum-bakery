@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#2B4EAF"/>
+<title>Place an Order — Pure Yum Bakery | Canal Winchester, Ohio</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --pink:#E8186A;--pink-light:#FDE8F1;--blue:#2B4EAF;--yellow:#E8E84A;
+  --cream:#FFFBF6;--dark:#1A1A1A;--text:#111111;--muted:#666666;
+  --border:#F0E8E0;--white:#FFFFFF;--shadow:0 4px 20px rgba(0,0,0,0.08);
+}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);line-height:1.6;}
+
+nav{background:var(--white);border-bottom:2px solid var(--border);padding:0 40px;height:64px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;}
+.nav-logo{font-family:'Pacifico',cursive;font-size:1.2rem;color:var(--pink);text-decoration:none;}
+.nav-back{color:var(--muted);text-decoration:none;font-size:0.88rem;font-weight:500;display:flex;align-items:center;gap:6px;}
+.nav-back:hover{color:var(--pink);}
+
+.page-hero{background:linear-gradient(135deg,var(--pink) 0%,#c8015a 100%);padding:48px 24px;text-align:center;color:#fff;}
+.page-hero h1{font-family:'Pacifico',cursive;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:10px;}
+.page-hero p{font-size:1rem;opacity:0.88;max-width:500px;margin:0 auto;}
+
+.order-wrap{max-width:780px;margin:0 auto;padding:48px 24px;}
+
+.form-card{background:var(--white);border-radius:16px;padding:36px;box-shadow:var(--shadow);margin-bottom:24px;}
+.form-card h2{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:var(--dark);margin-bottom:4px;display:flex;align-items:center;gap:10px;}
+.form-card .card-sub{font-size:0.82rem;color:var(--muted);margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border);}
+.step-badge{background:var(--pink);color:#fff;width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:800;flex-shrink:0;}
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:16px;}
+.form-group.full{grid-column:1/-1;}
+.form-group label{font-size:0.78rem;font-weight:700;color:var(--dark);letter-spacing:0.3px;}
+.form-group .label-hint{font-size:0.72rem;color:var(--muted);font-weight:400;margin-left:4px;}
+.form-group input,.form-group select,.form-group textarea{border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-size:0.9rem;font-family:inherit;color:var(--text);background:var(--white);outline:none;transition:border-color 0.2s;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--pink);}
+.form-group textarea{resize:vertical;min-height:80px;}
+.checkbox-group{display:flex;flex-direction:column;gap:10px;}
+.checkbox-item{display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;transition:all 0.2s;}
+.checkbox-item:hover{border-color:var(--pink);background:var(--pink-light);}
+.checkbox-item input[type=checkbox]{accent-color:var(--pink);width:16px;height:16px;cursor:pointer;flex-shrink:0;}
+.checkbox-item label{cursor:pointer;font-size:0.88rem;}
+.radio-group{display:flex;flex-wrap:wrap;gap:10px;}
+.radio-item{display:flex;align-items:center;gap:8px;padding:9px 16px;border:1.5px solid var(--border);border-radius:20px;cursor:pointer;transition:all 0.2s;}
+.radio-item:hover{border-color:var(--pink);}
+.radio-item input[type=radio]{accent-color:var(--pink);cursor:pointer;}
+.radio-item label{cursor:pointer;font-size:0.85rem;font-weight:500;}
+.radio-item.selected{border-color:var(--pink);background:var(--pink-light);}
+
+/* Conditional sections */
+.conditional-section{display:none;background:var(--pink-light);border-radius:12px;padding:24px;margin-top:20px;border:1.5px solid rgba(232,24,106,0.15);}
+.conditional-section.show{display:block;}
+.conditional-section h3{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;color:var(--pink);margin-bottom:4px;}
+.conditional-section .cond-sub{font-size:0.8rem;color:var(--muted);margin-bottom:16px;}
+
+.divider{border:none;border-top:1px solid var(--border);margin:20px 0;}
+
+.submit-section{text-align:center;padding:16px 0;}
+.form-submit{background:var(--pink);color:#fff;border:none;padding:16px 48px;border-radius:25px;font-weight:800;font-size:1.05rem;font-family:inherit;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 16px rgba(232,24,106,0.3);}
+.form-submit:hover{background:#c8015a;transform:translateY(-2px);}
+.submit-note{font-size:0.78rem;color:var(--muted);margin-top:10px;}
+
+.success-card{background:var(--white);border-radius:16px;padding:60px 36px;box-shadow:var(--shadow);text-align:center;display:none;}
+.success-card .check{font-size:4rem;margin-bottom:16px;}
+.success-card h2{font-family:'Pacifico',cursive;color:var(--pink);font-size:1.8rem;margin-bottom:12px;}
+.success-card p{color:var(--muted);max-width:400px;margin:0 auto 24px;}
+.success-card a{color:var(--pink);text-decoration:none;font-weight:700;}
+
+@media(max-width:600px){
+  nav{padding:0 16px;}
+  .form-row{grid-template-columns:1fr;}
+  .form-card{padding:22px;}
+  .page-hero{padding:36px 20px;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Pure Yum</a>
+  <a href="index.html" class="nav-back">← Back to Home</a>
+</nav>
+
+<div class="page-hero">
+  <h1>Place Your Order 🎂</h1>
+  <p>Fill out the details below and we'll confirm everything within 24 hours. The more info, the better!</p>
+</div>
+
+<div class="order-wrap">
+
+  <div id="order-form">
+
+    <!-- STEP 1: BASICS -->
+    <div class="form-card">
+      <h2><span class="step-badge">1</span> About You & Your Event</h2>
+      <div class="card-sub">Tell us who you are and what you're celebrating.</div>
+
+      <div class="form-row">
+        <div class="form-group"><label>Your Name *</label><input type="text" id="f-name" placeholder="Jane Smith"/></div>
+        <div class="form-group"><label>Email Address *</label><input type="email" id="f-email" placeholder="jane@email.com"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Phone Number</label><input type="tel" id="f-phone" placeholder="(614) 000-0000"/></div>
+        <div class="form-group"><label>When do you need your order? *</label><input type="date" id="f-date"/></div>
+      </div>
+      <div class="form-group">
+        <label>What's the theme or occasion? *</label>
+        <input type="text" id="f-theme" placeholder="Paw Patrol birthday, bridal shower, Christmas, etc."/>
+      </div>
+      <div class="form-group">
+        <label>How many people? *</label>
+        <input type="text" id="f-guests" placeholder="e.g. 25 guests"/>
+      </div>
+    </div>
+
+    <!-- STEP 2: PICKUP/DELIVERY -->
+    <div class="form-card">
+      <h2><span class="step-badge">2</span> Pickup or Delivery?</h2>
+      <div class="card-sub">Choose how you'd like to receive your order.</div>
+
+      <div class="radio-group" id="pickup-group">
+        <div class="radio-item" onclick="selectRadio('f-pickup','pickup',this)">
+          <input type="radio" name="f-pickup" id="pickup-wu" value="pickup-wu"/>
+          <label for="pickup-wu">📍 Pickup — Winchester Farm Exchange<br><span style="font-size:0.75rem;color:var(--muted);">8 S. High St., Canal Winchester, OH</span></label>
+        </div>
+        <div class="radio-item" onclick="selectRadio('f-pickup','pickup',this)">
+          <input type="radio" name="f-pickup" id="pickup-lith" value="pickup-lith"/>
+          <label for="pickup-lith">📍 Pickup — Lithopolis, Ohio</label>
+        </div>
+        <div class="radio-item" onclick="selectRadio('f-pickup','delivery',this)">
+          <input type="radio" name="f-pickup" id="delivery" value="delivery"/>
+          <label for="delivery">🚗 Delivery <span style="font-size:0.75rem;color:var(--muted);">(+$5–$10 delivery fee)</span></label>
+        </div>
+      </div>
+      <div id="delivery-address" style="display:none;margin-top:14px;">
+        <div class="form-group"><label>Delivery Address</label><input type="text" id="f-address" placeholder="123 Main St, Columbus, OH 43215"/></div>
+      </div>
+    </div>
+
+    <!-- STEP 3: WHAT ARE YOU ORDERING -->
+    <div class="form-card">
+      <h2><span class="step-badge">3</span> What Are You Ordering?</h2>
+      <div class="card-sub">Select all that apply — we'll show you the right questions.</div>
+
+      <div class="checkbox-group">
+        <div class="checkbox-item"><input type="checkbox" id="order-cookies" onchange="toggleSection('cookies-section',this)"/><label for="order-cookies">🍪 Cookies (sugar cookies, royal icing cookies)</label></div>
+        <div class="checkbox-item"><input type="checkbox" id="order-cupcakes" onchange="toggleSection('cupcakes-section',this)"/><label for="order-cupcakes">🧁 Cupcakes</label></div>
+        <div class="checkbox-item"><input type="checkbox" id="order-cake" onchange="toggleSection('cake-section',this)"/><label for="order-cake">🎂 Cake</label></div>
+        <div class="checkbox-item"><input type="checkbox" id="order-purey" onchange="toggleSection('purey-section',this)"/><label for="order-purey">✨ Pure Yum Mini Cakes</label></div>
+        <div class="checkbox-item"><input type="checkbox" id="order-other"/><label for="order-other">🎉 Other / Something special</label></div>
+      </div>
+
+      <!-- COOKIES -->
+      <div class="conditional-section" id="cookies-section">
+        <h3>🍪 Cookie Details</h3>
+        <div class="cond-sub">Help us get your cookies just right.</div>
+
+        <div class="form-group">
+          <label>Cookie type?</label>
+          <div class="radio-group" style="margin-top:6px;">
+            <div class="radio-item"><input type="radio" name="cookie-type" value="royal"/> <label>Royal Icing Cookies</label></div>
+            <div class="radio-item"><input type="radio" name="cookie-type" value="classic"/> <label>Classic Cookies</label></div>
+            <div class="radio-item"><input type="radio" name="cookie-type" value="both"/> <label>Both!</label></div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Cookie size? <span class="label-hint">(Royal icing only)</span></label>
+          <div class="radio-group" style="margin-top:6px;">
+            <div class="radio-item"><input type="radio" name="cookie-size" value="small"/> <label>Small</label></div>
+            <div class="radio-item"><input type="radio" name="cookie-size" value="medium"/> <label>Medium</label></div>
+            <div class="radio-item"><input type="radio" name="cookie-size" value="large"/> <label>Large</label></div>
+            <div class="radio-item"><input type="radio" name="cookie-size" value="variety"/> <label>Variety</label></div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Variety of shapes & designs?</label>
+          <textarea placeholder="Yes! I'm thinking sunflowers, butterflies, and hearts... OR No, just one design. Describe what you have in mind!"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Individually wrapped?</label>
+            <div class="radio-group" style="margin-top:6px;">
+              <div class="radio-item"><input type="radio" name="cookie-wrap" value="yes"/> <label>Yes please</label></div>
+              <div class="radio-item"><input type="radio" name="cookie-wrap" value="no"/> <label>No thanks</label></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>All natural dyes?</label>
+            <div class="radio-group" style="margin-top:6px;">
+              <div class="radio-item"><input type="radio" name="cookie-dye" value="yes"/> <label>Yes</label></div>
+              <div class="radio-item"><input type="radio" name="cookie-dye" value="no"/> <label>No preference</label></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>How many cookies?</label>
+          <input type="text" placeholder="e.g. 24 cookies, 1 dozen, etc."/>
+        </div>
+      </div>
+
+      <!-- CUPCAKES -->
+      <div class="conditional-section" id="cupcakes-section">
+        <h3>🧁 Cupcake Details</h3>
+        <div class="cond-sub">We do a minimum of 12 of one flavor.</div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>How many cupcakes?</label>
+            <input type="text" placeholder="e.g. 24"/>
+          </div>
+          <div class="form-group">
+            <label>Cupcake liner color?</label>
+            <input type="text" placeholder="White, pink, gold, or describe..."/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Flavor(s)? <span class="label-hint">Min. 12 per flavor</span></label>
+          <input type="text" placeholder="Vanilla, chocolate, strawberry, lemon, red velvet..."/>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Sprinkles?</label>
+            <div class="radio-group" style="margin-top:6px;">
+              <div class="radio-item"><input type="radio" name="cupcake-sprinkles" value="yes"/> <label>Yes!</label></div>
+              <div class="radio-item"><input type="radio" name="cupcake-sprinkles" value="no"/> <label>No</label></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Icing color(s)?</label>
+            <input type="text" placeholder="Solid pink, or multiple colors — describe!"/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Any specific decoration requests?</label>
+          <textarea placeholder="Toppers, specific design, theme details..."></textarea>
+        </div>
+      </div>
+
+      <!-- CAKE -->
+      <div class="conditional-section" id="cake-section">
+        <h3>🎂 Cake Details</h3>
+        <div class="cond-sub">Tell us about your dream cake! Not sure what size? Just tell us your guest count and we'll recommend.</div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Cake size?</label>
+            <input type="text" placeholder="6-inch, 8-inch, tiered, or tell us guest count"/>
+          </div>
+          <div class="form-group">
+            <label>Flavor(s)?</label>
+            <input type="text" placeholder="Vanilla, chocolate, lemon, carrot..."/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Icing — solid color or multiple?</label>
+          <input type="text" placeholder="Solid white, pink ombre, blue and gold..."/>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Sprinkles?</label>
+            <div class="radio-group" style="margin-top:6px;">
+              <div class="radio-item"><input type="radio" name="cake-sprinkles" value="yes"/> <label>Yes!</label></div>
+              <div class="radio-item"><input type="radio" name="cake-sprinkles" value="no"/> <label>No</label></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Design inspiration?</label>
+            <input type="text" placeholder="Theme, character, color, style..."/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Additional details or special requests?</label>
+          <textarea placeholder="Toppers, writing on cake, specific decorations, photos/inspiration links..."></textarea>
+        </div>
+      </div>
+
+      <!-- PURE YUM MINI CAKES -->
+      <div class="conditional-section" id="purey-section">
+        <h3>✨ Pure Yum Mini Cake Details</h3>
+        <div class="cond-sub">We do 24 mini cakes per flavor. Pick one or ask about mixing!</div>
+
+        <div class="form-group">
+          <label>Choose your flavor(s):</label>
+          <div class="checkbox-group" style="margin-top:8px;">
+            <div class="checkbox-item"><input type="checkbox"/><label>🍋 Lemon Blueberry</label></div>
+            <div class="checkbox-item"><input type="checkbox"/><label>🍫 Triple Chocolate</label></div>
+            <div class="checkbox-item"><input type="checkbox"/><label>🎂 Red Velvet Cheesecake</label></div>
+            <div class="checkbox-item"><input type="checkbox"/><label>🍓 Chocolate Covered Strawberry</label></div>
+            <div class="checkbox-item"><input type="checkbox"/><label>🥕 Carrot Cake with Cream Cheese Glaze</label></div>
+            <div class="checkbox-item"><input type="checkbox"/><label>🍫🌿 Chocolate Peppermint</label></div>
+            <div class="checkbox-item"><input type="checkbox"/><label>🍎 Apple Cider</label></div>
+            <div class="checkbox-item"><input type="checkbox"/><label>🍓 Strawberry Cheesecake</label></div>
+            <div class="checkbox-item"><input type="checkbox"/><label>💭 Other — I'll describe below!</label></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Quantity & any special notes?</label>
+          <textarea placeholder="How many? Any specific requests or flavor ideas?"></textarea>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- STEP 4: ANYTHING ELSE -->
+    <div class="form-card">
+      <h2><span class="step-badge">4</span> Anything Else?</h2>
+      <div class="card-sub">Special requests, allergy info, inspiration photos — anything that helps us make this perfect.</div>
+      <div class="form-group">
+        <label>Additional notes, allergies, or inspiration?</label>
+        <textarea placeholder="Allergy info, links to inspiration photos, budget range, anything else we should know!" style="min-height:100px;"></textarea>
+      </div>
+    </div>
+
+    <div class="submit-section">
+      <button class="form-submit" onclick="submitFullOrder()">Submit My Order Request 🎂</button>
+      <p class="submit-note">We'll review your order and reach out within 24 hours to confirm details and pricing.</p>
+    </div>
+
+  </div>
+
+  <!-- SUCCESS STATE -->
+  <div class="success-card" id="order-success">
+    <div class="check">🎉</div>
+    <h2>Order Request Received!</h2>
+    <p>Thank you! We'll review your order details and get back to you within 24 hours to confirm everything and provide pricing.</p>
+    <p style="margin-bottom:24px;">We can't wait to make something <strong>pure yum</strong> for you!</p>
+    <a href="index.html">← Back to Home</a>
+  </div>
+
+</div>
+
+<footer style="background:#111;padding:20px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-top:40px;">
+  <span style="font-family:'Pacifico',cursive;color:#E8186A;font-size:1rem;">Pure Yum Bakery</span>
+  <span style="font-size:0.8rem;color:#555;">© 2026 Pure Yum Bakery and Catering · Canal Winchester, OH</span>
+  <a href="index.html" style="color:#E8E84A;text-decoration:none;font-size:0.85rem;">← Back to Home</a>
+</footer>
+
+<script>
+function toggleSection(id, checkbox){
+  const el = document.getElementById(id);
+  if(checkbox.checked) el.classList.add('show');
+  else el.classList.remove('show');
+}
+
+function selectRadio(name, value, item){
+  document.querySelectorAll(`[onclick*="${name}"]`).forEach(i => i.classList.remove('selected'));
+  item.classList.add('selected');
+  if(name === 'f-pickup' && value === 'delivery'){
+    document.getElementById('delivery-address').style.display = 'block';
+  } else if(name === 'f-pickup') {
+    document.getElementById('delivery-address').style.display = 'none';
+  }
+}
+
+function submitFullOrder(){
+  const name = document.getElementById('f-name').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+  const date = document.getElementById('f-date').value;
+  const theme = document.getElementById('f-theme').value.trim();
+  if(!name || !email || !theme){
+    alert('Please fill in your name, email, and event theme before submitting!');
+    return;
+  }
+  document.getElementById('order-form').style.display='none';
+  document.getElementById('order-success').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+
+</body>
+</html>
