@@ -367,18 +367,72 @@ function selectRadio(name, value, item){
   }
 }
 
-function submitFullOrder(){
+async function submitFullOrder(){
   const name = document.getElementById('f-name').value.trim();
   const email = document.getElementById('f-email').value.trim();
+  const phone = document.getElementById('f-phone').value.trim();
   const date = document.getElementById('f-date').value;
   const theme = document.getElementById('f-theme').value.trim();
+  const quantity = document.getElementById('f-quantity') ? document.getElementById('f-quantity').value : '';
+  const size = document.getElementById('f-size') ? document.getElementById('f-size').value : '';
+  const flavors = document.getElementById('f-flavors') ? document.getElementById('f-flavors').value : '';
+  const notes = document.getElementById('f-notes') ? document.getElementById('f-notes').value : '';
+  const budget = document.getElementById('f-budget') ? document.getElementById('f-budget').value : '';
+  const pickup = document.querySelector('.radio-item.selected[onclick*="f-pickup"]');
+  const pickupVal = pickup ? pickup.getAttribute('onclick').match(/'([^']+)'\s*,\s*this/)?.[1] || '' : '';
+  const deliveryAddr = document.getElementById('delivery-address-input') ? document.getElementById('delivery-address-input').value : '';
+
+  // Collect checked items (cookies, cakes, etc.)
+  const checkedItems = [];
+  document.querySelectorAll('input[type=checkbox]:checked').forEach(cb => {
+    checkedItems.push(cb.closest('label') ? cb.closest('label').textContent.trim() : cb.name);
+  });
+
   if(!name || !email || !theme){
     alert('Please fill in your name, email, and event theme before submitting!');
     return;
   }
-  document.getElementById('order-form').style.display='none';
-  document.getElementById('order-success').style.display='block';
-  window.scrollTo({top:0,behavior:'smooth'});
+
+  const btn = document.querySelector('.form-submit');
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  const formData = new FormData();
+  formData.append('_subject', `New Order Request from ${name} — Pure Yum Bakery`);
+  formData.append('Name', name);
+  formData.append('Email', email);
+  formData.append('Phone', phone);
+  formData.append('Event Date', date);
+  formData.append('Event Theme', theme);
+  formData.append('Quantity', quantity);
+  formData.append('Size', size);
+  formData.append('Flavors / Dietary Notes', flavors);
+  formData.append('Pickup or Delivery', pickupVal);
+  formData.append('Delivery Address', deliveryAddr);
+  formData.append('Budget Range', budget);
+  formData.append('Items Selected', checkedItems.join(', '));
+  formData.append('Additional Notes', notes);
+
+  try {
+    const res = await fetch('https://formspree.io/f/xkgjwjqn', {
+      method: 'POST',
+      body: formData,
+      headers: { 'Accept': 'application/json' }
+    });
+    if(res.ok){
+      document.getElementById('order-form').style.display='none';
+      document.getElementById('order-success').style.display='block';
+      window.scrollTo({top:0,behavior:'smooth'});
+    } else {
+      btn.textContent = 'Submit My Order Request 🎂';
+      btn.disabled = false;
+      alert('Something went wrong. Please email us directly at Pureyumbakery@gmail.com');
+    }
+  } catch(err){
+    btn.textContent = 'Submit My Order Request 🎂';
+    btn.disabled = false;
+    alert('Something went wrong. Please email us directly at Pureyumbakery@gmail.com');
+  }
 }
 </script>
 
