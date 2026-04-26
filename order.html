@@ -222,7 +222,7 @@ nav{background:var(--white);border-bottom:2px solid var(--border);padding:0 40px
         <div class="form-row">
           <div class="form-group">
             <label>How many cupcakes?</label>
-            <input type="text" placeholder="e.g. 24"/>
+            <input type="text" id="cupcake-quantity" placeholder="e.g. 24"/>
           </div>
           <div class="form-group">
             <label>Cupcake liner color?</label>
@@ -316,8 +316,12 @@ nav{background:var(--white);border-bottom:2px solid var(--border);padding:0 40px
           </div>
         </div>
         <div class="form-group">
-          <label>Quantity & any special notes?</label>
-          <textarea placeholder="How many? Any specific requests or flavor ideas?"></textarea>
+          <label>How many Pure Yum Mini Cakes?</label>
+          <input type="text" id="minicake-quantity" placeholder="e.g. 24 (minimum per flavor)"/>
+        </div>
+        <div class="form-group">
+          <label>Any specific requests?</label>
+          <textarea id="minicake-requests" placeholder="Flavor ideas, packaging, anything else!"></textarea>
         </div>
       </div>
 
