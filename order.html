@@ -324,7 +324,7 @@ nav{background:var(--white);border-bottom:2px solid var(--border);padding:0 40px
       <div class="card-sub">Special requests, allergy info, inspiration photos — anything that helps us make this perfect.</div>
       <div class="form-group">
         <label>Additional notes, allergies, or inspiration?</label>
-        <textarea placeholder="Allergy info, links to inspiration photos, budget range, anything else we should know!" style="min-height:100px;"></textarea>
+        <textarea id="f-notes" placeholder="Allergy info, links to inspiration photos, budget range, anything else we should know!" style="min-height:100px;"></textarea>
       </div>
     </div>
 
@@ -387,12 +387,25 @@ async function submitFullOrder(){
     }
   });
 
-  // Collect checked checkboxes
+  // Collect checked checkboxes with clean label text
   const checkedItems = [];
   document.querySelectorAll('input[type=checkbox]:checked').forEach(cb => {
-    const lbl = cb.parentElement?.textContent?.trim() || cb.name;
-    checkedItems.push(lbl);
+    const labelEl = cb.closest('.checkbox-item')?.querySelector('label');
+    const txt = labelEl ? labelEl.textContent.trim() : (cb.id || cb.name || 'Item');
+    checkedItems.push(txt);
   });
+
+  // Collect all textareas (cookie details, cake details, etc.)
+  const extraDetails = [];
+  document.querySelectorAll('textarea').forEach(ta => {
+    if(ta.id === 'f-notes') return; // handled separately
+    if(ta.value.trim()){
+      const lbl = ta.closest('.form-group')?.querySelector('label')?.textContent?.trim() || 'Details';
+      extraDetails.push(`${lbl}: ${ta.value.trim()}`);
+    }
+  });
+
+  const notes = document.getElementById('f-notes') ? document.getElementById('f-notes').value.trim() : '';
 
   // Collect selected radio items
   const selectedRadios = [];
@@ -418,11 +431,11 @@ async function submitFullOrder(){
     theme: theme,
     quantity: guestCount || 'Not specified',
     size: selectedRadios.join(', ') || 'Not specified',
-    flavors: allFields.join('\n') || 'None',
+    flavors: extraDetails.join('\n') || 'None provided',
     items: checkedItems.join(', ') || 'None selected',
     pickup: deliveryAddr ? `Delivery to: ${deliveryAddr}` : 'Pickup',
-    budget: 'See details above',
-    notes: 'See all fields above'
+    budget: allFields.join(', ') || 'Not specified',
+    notes: notes || 'None'
   };
 
   try {
