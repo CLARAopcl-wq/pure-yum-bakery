@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>emailjs.init('VN57vFvVCWztMVJdq');</script>
 <meta name="theme-color" content="#2B4EAF"/>
 <title>Place an Order — Pure Yum Bakery | Canal Winchester, Ohio</title>
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
@@ -397,38 +399,29 @@ async function submitFullOrder(){
   btn.textContent = 'Sending...';
   btn.disabled = true;
 
-  const formData = new FormData();
-  formData.append('_subject', `New Order Request from ${name} — Pure Yum Bakery`);
-  formData.append('Name', name);
-  formData.append('Email', email);
-  formData.append('Phone', phone);
-  formData.append('Event Date', date);
-  formData.append('Event Theme', theme);
-  formData.append('Quantity', quantity);
-  formData.append('Size', size);
-  formData.append('Flavors / Dietary Notes', flavors);
-  formData.append('Pickup or Delivery', pickupVal);
-  formData.append('Delivery Address', deliveryAddr);
-  formData.append('Budget Range', budget);
-  formData.append('Items Selected', checkedItems.join(', '));
-  formData.append('Additional Notes', notes);
+  const templateParams = {
+    name: name,
+    email: email,
+    phone: phone,
+    date: date || 'Not specified',
+    theme: theme,
+    quantity: quantity || 'Not specified',
+    size: size || 'Not specified',
+    flavors: flavors || 'None',
+    items: checkedItems.join(', ') || 'None selected',
+    pickup: pickupVal || 'Not specified',
+    delivery_address: deliveryAddr || 'N/A',
+    budget: budget || 'Not specified',
+    notes: notes || 'None'
+  };
 
   try {
-    const res = await fetch('https://formspree.io/f/xkgjwjqn', {
-      method: 'POST',
-      body: formData,
-      headers: { 'Accept': 'application/json' }
-    });
-    if(res.ok){
-      document.getElementById('order-form').style.display='none';
-      document.getElementById('order-success').style.display='block';
-      window.scrollTo({top:0,behavior:'smooth'});
-    } else {
-      btn.textContent = 'Submit My Order Request 🎂';
-      btn.disabled = false;
-      alert('Something went wrong. Please email us directly at Pureyumbakery@gmail.com');
-    }
+    await emailjs.send('service_d9nyygd', 'template_x3s3els', templateParams);
+    document.getElementById('order-form').style.display='none';
+    document.getElementById('order-success').style.display='block';
+    window.scrollTo({top:0,behavior:'smooth'});
   } catch(err){
+    console.error('EmailJS error:', err);
     btn.textContent = 'Submit My Order Request 🎂';
     btn.disabled = false;
     alert('Something went wrong. Please email us directly at Pureyumbakery@gmail.com');
