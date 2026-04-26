@@ -375,19 +375,29 @@ async function submitFullOrder(){
   const phone = document.getElementById('f-phone').value.trim();
   const date = document.getElementById('f-date').value;
   const theme = document.getElementById('f-theme').value.trim();
-  const quantity = document.getElementById('f-quantity') ? document.getElementById('f-quantity').value : '';
-  const size = document.getElementById('f-size') ? document.getElementById('f-size').value : '';
-  const flavors = document.getElementById('f-flavors') ? document.getElementById('f-flavors').value : '';
-  const notes = document.getElementById('f-notes') ? document.getElementById('f-notes').value : '';
-  const budget = document.getElementById('f-budget') ? document.getElementById('f-budget').value : '';
-  const pickup = document.querySelector('.radio-item.selected[onclick*="f-pickup"]');
-  const pickupVal = pickup ? pickup.getAttribute('onclick').match(/'([^']+)'\s*,\s*this/)?.[1] || '' : '';
-  const deliveryAddr = document.getElementById('delivery-address-input') ? document.getElementById('delivery-address-input').value : '';
+  const guestCount = document.getElementById('f-guests') ? document.getElementById('f-guests').value : '';
+  const deliveryAddr = document.getElementById('f-address') ? document.getElementById('f-address').value : '';
 
-  // Collect checked items (cookies, cakes, etc.)
+  // Collect all visible filled fields dynamically
+  const allFields = [];
+  document.querySelectorAll('input[type=text], input[type=number], input[type=tel], input[type=date], input[type=email], select, textarea').forEach(el => {
+    if(el.id && el.value && el.value.trim() && el.id !== 'f-name' && el.id !== 'f-email' && el.id !== 'f-phone' && el.id !== 'f-date' && el.id !== 'f-theme'){
+      const label = el.closest('.form-group')?.querySelector('label')?.textContent?.trim() || el.id;
+      allFields.push(`${label}: ${el.value.trim()}`);
+    }
+  });
+
+  // Collect checked checkboxes
   const checkedItems = [];
   document.querySelectorAll('input[type=checkbox]:checked').forEach(cb => {
-    checkedItems.push(cb.closest('label') ? cb.closest('label').textContent.trim() : cb.name);
+    const lbl = cb.parentElement?.textContent?.trim() || cb.name;
+    checkedItems.push(lbl);
+  });
+
+  // Collect selected radio items
+  const selectedRadios = [];
+  document.querySelectorAll('.radio-item.selected').forEach(r => {
+    selectedRadios.push(r.textContent.trim());
   });
 
   if(!name || !email || !theme){
@@ -402,17 +412,16 @@ async function submitFullOrder(){
   const templateParams = {
     name: name,
     email: email,
-    phone: phone,
+    phone: phone || 'Not provided',
     date: date || 'Not specified',
     theme: theme,
-    quantity: quantity || 'Not specified',
-    size: size || 'Not specified',
-    flavors: flavors || 'None',
+    quantity: guestCount || 'Not specified',
+    size: selectedRadios.join(', ') || 'Not specified',
+    flavors: allFields.join('\n') || 'None',
     items: checkedItems.join(', ') || 'None selected',
-    pickup: pickupVal || 'Not specified',
-    delivery_address: deliveryAddr || 'N/A',
-    budget: budget || 'Not specified',
-    notes: notes || 'None'
+    pickup: deliveryAddr ? `Delivery to: ${deliveryAddr}` : 'Pickup',
+    budget: 'See details above',
+    notes: 'See all fields above'
   };
 
   try {
