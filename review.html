@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Leave a Review — Pure Yum Bakery</title>
+<meta name="robots" content="noindex"/>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>emailjs.init('VN57vFvVCWztMVJdq');</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --pink:#E8186A;
+  --blue:#2B4EAF;
+  --yellow:#E8E84A;
+  --white:#FFFFFF;
+  --bg:#FFF8F9;
+  --dark:#1a1a2e;
+  --muted:#888;
+  --border:#e8e0e5;
+}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+.card{background:var(--white);border-radius:20px;padding:40px 36px;max-width:480px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,0.08);text-align:center;}
+.logo{font-family:'Pacifico',cursive;font-size:1.6rem;color:var(--pink);margin-bottom:8px;}
+.logo span{color:var(--blue);}
+h1{font-size:1.4rem;font-weight:700;color:var(--dark);margin-bottom:8px;}
+.subtitle{color:var(--muted);font-size:0.9rem;margin-bottom:32px;line-height:1.6;}
+
+/* Stars */
+.stars{display:flex;justify-content:center;gap:8px;margin-bottom:28px;}
+.star{font-size:2.8rem;cursor:pointer;transition:transform 0.15s;filter:grayscale(1);opacity:0.3;}
+.star.active{filter:none;opacity:1;transform:scale(1.1);}
+.star:hover{transform:scale(1.15);}
+
+/* Form */
+.form-group{text-align:left;margin-bottom:18px;}
+label{font-size:0.78rem;font-weight:700;color:var(--dark);display:block;margin-bottom:6px;letter-spacing:0.3px;}
+input,textarea{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--dark);outline:none;transition:border-color 0.2s;background:var(--white);}
+input:focus,textarea:focus{border-color:var(--pink);}
+textarea{resize:vertical;min-height:100px;}
+.submit-btn{width:100%;background:var(--pink);color:#fff;border:none;padding:16px;border-radius:25px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;margin-top:8px;transition:background 0.2s;}
+.submit-btn:hover{background:#c8015a;}
+.submit-btn:disabled{background:#ccc;cursor:not-allowed;}
+.note{font-size:0.75rem;color:var(--muted);margin-top:12px;}
+
+/* Success */
+.success{display:none;text-align:center;}
+.success .check{font-size:4rem;margin-bottom:16px;}
+.success h2{font-family:'Pacifico',cursive;color:var(--pink);font-size:1.6rem;margin-bottom:12px;}
+.success p{color:var(--muted);line-height:1.7;}
+.back-btn{display:inline-block;margin-top:24px;background:var(--blue);color:#fff;padding:12px 28px;border-radius:25px;text-decoration:none;font-weight:600;font-size:0.9rem;}
+</style>
+</head>
+<body>
+
+<div class="card" id="review-form">
+  <div class="logo">Pure Yum <span>Bakery</span></div>
+  <h1>How did we do? 🎂</h1>
+  <p class="subtitle">Your feedback means the world to us! It only takes a minute and helps us keep making delicious things for you.</p>
+
+  <!-- Stars -->
+  <div class="stars" id="stars">
+    <span class="star" data-value="1" onclick="setRating(1)">⭐</span>
+    <span class="star" data-value="2" onclick="setRating(2)">⭐</span>
+    <span class="star" data-value="3" onclick="setRating(3)">⭐</span>
+    <span class="star" data-value="4" onclick="setRating(4)">⭐</span>
+    <span class="star" data-value="5" onclick="setRating(5)">⭐</span>
+  </div>
+
+  <div class="form-group">
+    <label>Your review</label>
+    <textarea id="review-text" placeholder="Tell us about your experience — what did you order? How did it taste? Did it make someone's day special? 🎉"></textarea>
+  </div>
+
+  <div class="form-group">
+    <label>Your name <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+    <input type="text" id="review-name" placeholder="First name or nickname"/>
+  </div>
+
+  <button class="submit-btn" id="submit-btn" onclick="submitReview()">Send My Review 💗</button>
+  <p class="note">Your review will be sent directly to Sam & Kristin at Pure Yum Bakery.</p>
+</div>
+
+<div class="card success" id="review-success">
+  <div class="check">💗</div>
+  <h2>Thank you!</h2>
+  <p>Sam & Kristin appreciate you taking the time to share your experience. It truly means everything to them!</p>
+  <a href="https://pureyumbakery.com" class="back-btn">Back to Pure Yum Bakery</a>
+</div>
+
+<script>
+let selectedRating = 0;
+
+function setRating(val){
+  selectedRating = val;
+  document.querySelectorAll('.star').forEach((s, i) => {
+    s.classList.toggle('active', i < val);
+  });
+}
+
+async function submitReview(){
+  const text = document.getElementById('review-text').value.trim();
+  const name = document.getElementById('review-name').value.trim() || 'Anonymous';
+
+  if(!selectedRating){
+    alert('Please select a star rating!');
+    return;
+  }
+  if(!text){
+    alert('Please write a short review!');
+    return;
+  }
+
+  const btn = document.getElementById('submit-btn');
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  const stars = '⭐'.repeat(selectedRating);
+
+  try {
+    await emailjs.send('service_5yynvhc', 'template_s3s3elx', {
+      to_email: 'Pureyumbakery@gmail.com',
+      name: name,
+      email: 'review@pureyumbakery.com',
+      phone: 'N/A',
+      date: new Date().toLocaleDateString(),
+      theme: `${stars} (${selectedRating}/5 stars)`,
+      quantity: 'Review Submission',
+      size: '',
+      flavors: text,
+      items: `${selectedRating} star review from ${name}`,
+      pickup: '',
+      budget: '',
+      notes: `Rating: ${selectedRating}/5\nReviewer: ${name}\nReview: ${text}`
+    });
+
+    document.getElementById('review-form').style.display = 'none';
+    document.getElementById('review-success').style.display = 'block';
+  } catch(err){
+    console.error(err);
+    btn.textContent = 'Send My Review 💗';
+    btn.disabled = false;
+    alert('Something went wrong. Please email us directly at Pureyumbakery@gmail.com');
+  }
+}
+</script>
+</body>
+</html>
