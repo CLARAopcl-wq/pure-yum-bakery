@@ -135,6 +135,15 @@ async function submitReview(){
       notes: `Rating: ${selectedRating}/5\nReviewer: ${name}\nReview: ${text}`
     });
 
+    // Also save to Railway for carousel display
+    try {
+      await fetch('https://blueprint-hub-production.up.railway.app/reviews/pure-yum', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, rating: selectedRating, review: text })
+      });
+    } catch(e) { console.warn('Railway save failed:', e); }
+
     document.getElementById('review-form').style.display = 'none';
     document.getElementById('review-success').style.display = 'block';
   } catch(err){
