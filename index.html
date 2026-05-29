@@ -298,6 +298,25 @@ footer a{color:var(--yellow);text-decoration:none;font-size:0.85rem;}
   <a href="#order">Order for Your Next Event →</a>
 </div>
 
+<!-- REVIEWS CAROUSEL -->
+<section style="background:#fff;padding:80px 0 70px;">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:48px;">
+      <div class="section-label" style="justify-content:center;">What Our Customers Say</div>
+      <h2 class="section-title" style="font-size:clamp(1.8rem,3.5vw,2.6rem);">Made With Love,<br>Enjoyed By All</h2>
+    </div>
+    <div class="reviews-carousel-wrap" style="position:relative;overflow:hidden;">
+      <div class="reviews-track" id="reviews-track" style="display:flex;gap:24px;transition:transform 0.6s cubic-bezier(0.16,1,0.3,1);"></div>
+    </div>
+    <!-- Dots -->
+    <div id="review-dots" style="display:flex;justify-content:center;gap:8px;margin-top:28px;"></div>
+    <!-- Leave a review CTA -->
+    <div style="text-align:center;margin-top:36px;">
+      <a href="/review.html" style="display:inline-flex;align-items:center;gap:8px;color:var(--pink);font-weight:600;font-size:0.88rem;text-decoration:none;border:1.5px solid var(--pink);padding:10px 22px;border-radius:25px;transition:all 0.2s;" onmouseover="this.style.background='var(--pink)';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='var(--pink)'">💗 Leave a Review</a>
+    </div>
+  </div>
+</section>
+
 <!-- Parties & Celebrations -->
 <section class="catering-bg" id="catering">
   <div class="container">
@@ -531,6 +550,81 @@ function submitOrderForm(){
   document.getElementById('order-form-fields').style.display='none';
   document.getElementById('order-form-success').style.display='block';
 }
+</script>
+<script>
+// ── REVIEWS CAROUSEL ─────────────────────────────────────────────────────────
+const PLACEHOLDER_REVIEWS = [
+  { name: 'Jessica M.', rating: 5, review: 'Absolutely stunning cookies for my daughter\'s birthday! Every single one was a work of art and tasted amazing. Sam & Kristin went above and beyond!' },
+  { name: 'Rachel T.', rating: 5, review: 'Ordered the custom graduation cookies and they were PERFECT. My graduate cried happy tears — they looked exactly like what I described. Will order again for every event!' },
+  { name: 'Brittany K.', rating: 5, review: 'The Nutella star bread was incredible. Brought it to a family gathering and it was gone in minutes. Everyone wanted the contact info!' },
+  { name: 'Amanda S.', rating: 5, review: 'Best custom cookies I\'ve ever had. The royal icing detail is unreal. My baby shower guests couldn\'t believe they were homemade!' },
+  { name: 'Lauren H.', rating: 5, review: 'Ordered a custom cake and cookies combo for a wedding shower. Everything was perfect — beautiful, delicious, and exactly on time. Pure Yum is the real deal.' },
+  { name: 'Megan P.', rating: 5, review: 'I\'ve ordered multiple times now and it just keeps getting better. The watermelon birthday cookies were the hit of the party!' },
+];
+
+let allReviews = [...PLACEHOLDER_REVIEWS];
+let currentSlide = 0;
+let visibleCount = window.innerWidth < 768 ? 1 : 3;
+let autoTimer = null;
+
+async function loadReviews(){
+  try {
+    const res = await fetch('https://blueprint-hub-production.up.railway.app/reviews/pure-yum');
+    const data = await res.json();
+    if(data.reviews && data.reviews.length > 0){
+      const live = data.reviews.map(r => ({ name: r.name, rating: r.rating, review: r.review }));
+      allReviews = [...live, ...PLACEHOLDER_REVIEWS];
+    }
+  } catch(e) { /* use placeholders */ }
+  buildCarousel();
+}
+
+function buildCarousel(){
+  const track = document.getElementById('reviews-track');
+  const dots = document.getElementById('review-dots');
+  if(!track) return;
+
+  visibleCount = window.innerWidth < 768 ? 1 : 3;
+  const totalSlides = Math.ceil(allReviews.length / visibleCount);
+
+  track.innerHTML = allReviews.map(r => `
+    <div class="review-card" style="flex:0 0 calc(${100/visibleCount}% - ${(visibleCount-1)*24/visibleCount}px);min-width:0;background:#FFF8F9;border:1.5px solid #f0e0e8;border-radius:16px;padding:28px 24px;">
+      <div style="display:flex;gap:2px;margin-bottom:12px;">${'⭐'.repeat(r.rating)}</div>
+      <p style="font-size:0.88rem;color:#444;line-height:1.75;margin-bottom:16px;font-style:italic;">"${r.review}"</p>
+      <div style="font-weight:700;font-size:0.82rem;color:var(--blue);">— ${r.name}</div>
+    </div>`).join('');
+
+  // Dots
+  dots.innerHTML = Array.from({length: totalSlides}, (_, i) =>
+    `<div onclick="goToSlide(${i})" style="width:8px;height:8px;border-radius:50%;background:${i===0?'var(--pink)':'#ddd'};cursor:pointer;transition:background 0.2s;" id="dot-${i}"></div>`
+  ).join('');
+
+  goToSlide(0);
+  startAuto();
+}
+
+function goToSlide(n){
+  visibleCount = window.innerWidth < 768 ? 1 : 3;
+  const totalSlides = Math.ceil(allReviews.length / visibleCount);
+  currentSlide = ((n % totalSlides) + totalSlides) % totalSlides;
+  const cardWidth = document.querySelector('.review-card')?.offsetWidth || 0;
+  const gap = 24;
+  document.getElementById('reviews-track').style.transform = `translateX(-${currentSlide * visibleCount * (cardWidth + gap)}px)`;
+  document.querySelectorAll('[id^="dot-"]').forEach((d,i) => {
+    d.style.background = i === currentSlide ? 'var(--pink)' : '#ddd';
+  });
+}
+
+function startAuto(){
+  if(autoTimer) clearInterval(autoTimer);
+  autoTimer = setInterval(() => {
+    const totalSlides = Math.ceil(allReviews.length / visibleCount);
+    goToSlide((currentSlide + 1) % totalSlides);
+  }, 4000);
+}
+
+window.addEventListener('resize', () => { buildCarousel(); });
+document.addEventListener('DOMContentLoaded', loadReviews);
 </script>
 </body>
 </html>
